@@ -15,7 +15,6 @@ import { Dispatcher } from '../dispatcher'
 import { Repository } from '../../models/repository'
 import { ManualConflictResolution } from '../../models/manual-conflict-resolution'
 import { BannerType } from '../../models/banner'
-import { PopupType } from '../../models/popup'
 import {
   renderUnmergedFilesSummary,
   renderShellLink,
@@ -29,6 +28,7 @@ interface IRebaseConflictsDialog {
   readonly targetBranch: string
   readonly baseBranch?: string
   readonly onDismissed: () => void
+  readonly onOpenDialog: () => void
   readonly workingDirectory: WorkingDirectoryStatus
   readonly manualResolutions: Map<string, ManualConflictResolution>
   readonly openFileInExternalEditor: (path: string) => void
@@ -53,12 +53,7 @@ export class RebaseConflictsDialog extends React.Component<
     this.props.dispatcher.setBanner({
       type: BannerType.RebaseConflictsFound,
       targetBranch: this.props.targetBranch,
-      popup: {
-        type: PopupType.RebaseConflicts,
-        targetBranch: this.props.targetBranch,
-        baseBranch: this.props.baseBranch,
-        repository: this.props.repository,
-      },
+      onOpenDialog: this.props.onOpenDialog,
     })
     this.props.onDismissed()
   }

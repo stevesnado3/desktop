@@ -1614,6 +1614,7 @@ export class App extends React.Component<IAppProps, IAppState> {
             workingDirectory={workingDirectory}
             manualResolutions={conflictState.manualResolutions}
             onDismissed={this.onPopupDismissed}
+            onOpenDialog={this.showConflictsPopup}
             openFileInExternalEditor={this.openFileInExternalEditor}
             resolvedExternalEditor={this.state.resolvedExternalEditor}
             openRepositoryInShell={this.openInShell}
@@ -1636,6 +1637,35 @@ export class App extends React.Component<IAppProps, IAppState> {
       default:
         return assertNever(popup, `Unknown popup type: ${popup}`)
     }
+  }
+
+  private showConflictsPopup = () => {
+    const { selectedState } = this.state
+
+    if (
+      selectedState === null ||
+      selectedState.type !== SelectionType.Repository
+    ) {
+      return
+    }
+
+    const { repository } = selectedState
+
+    const { changesState } = this.props.repositoryStateManager.get(repository)
+    const { conflictState } = changesState
+
+    if (conflictState === null || conflictState.kind === 'merge') {
+      return
+    }
+
+    const { targetBranch, baseBranch } = conflictState
+
+    this.props.dispatcher.showPopup({
+      type: PopupType.RebaseConflicts,
+      repository,
+      targetBranch,
+      baseBranch,
+    })
   }
 
   private onUsageReportingDismissed = (optOut: boolean) => {

@@ -2,16 +2,15 @@ import * as React from 'react'
 import { Octicon, OcticonSymbol } from '../octicons'
 import { Banner } from './banner'
 import { Dispatcher } from '../dispatcher'
-import { Popup } from '../../models/popup'
 import { LinkButton } from '../lib/link-button'
 
 interface IRebaseConflictsBannerProps {
   readonly dispatcher: Dispatcher
   /** branch the user is rebasing into */
   readonly targetBranch: string
-  /** rebase conflicts dialog popup to be shown by this banner */
-  readonly popup: Popup
   readonly onDismissed: () => void
+  /** callback to run when user clicks on link in banner text */
+  readonly onOpenDialog: () => void
 }
 
 export class RebaseConflictsBanner extends React.Component<
@@ -20,7 +19,7 @@ export class RebaseConflictsBanner extends React.Component<
 > {
   private openDialog = () => {
     this.props.onDismissed()
-    this.props.dispatcher.showPopup(this.props.popup)
+    this.props.onOpenDialog()
     this.props.dispatcher.recordRebaseConflictsDialogReopened()
   }
 
