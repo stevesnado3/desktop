@@ -101,6 +101,7 @@ export class RepositoryStateCache {
 
 function getInitialRepositoryState(): IRepositoryState {
   return {
+    currentRebaseFlowState: null,
     commitSelection: {
       sha: null,
       file: null,

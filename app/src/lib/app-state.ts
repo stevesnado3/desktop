@@ -35,6 +35,7 @@ import { ApplicationTheme } from '../ui/lib/application-theme'
 import { IAccountRepositories } from './stores/api-repositories-store'
 import { ManualConflictResolution } from '../models/manual-conflict-resolution'
 import { Banner } from '../models/banner'
+import { RebaseFlowState } from '../models/rebase-flow-state'
 
 export enum SelectionType {
   Repository,
@@ -321,6 +322,8 @@ export function isRebaseConflictState(
 export type ConflictState = MergeConflictState | RebaseConflictState
 
 export interface IRepositoryState {
+  readonly currentRebaseFlowState: RebaseFlowState | null
+
   readonly commitSelection: ICommitSelection
   readonly changesState: IChangesState
   readonly compareState: ICompareState
