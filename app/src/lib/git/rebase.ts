@@ -292,11 +292,21 @@ export async function continueRebase(
   )
 
   if (trackedFilesAfter.length === 0) {
-    const rebaseHead = Path.join(repository.path, '.git', 'REBASE_HEAD')
-    const rebaseCurrentCommit = await FSE.readFile(rebaseHead, 'utf8')
+    let rebaseCurrentCommit: string | null = null
+    try {
+      const rebaseHead = Path.join(repository.path, '.git', 'REBASE_HEAD')
+      const rebaseCurrentCommitOutput = await FSE.readFile(rebaseHead, 'utf8')
+      rebaseCurrentCommit = rebaseCurrentCommitOutput.trim()
+    } catch (err) {
+      log.warn(
+        '[rebase] a problem was encountered reading .git/REBASE_HEAD, so it is unsafe to continue rebasing',
+        err
+      )
+      return RebaseResult.Aborted
+    }
 
     log.warn(
-      `[rebase] no tracked changes to commit for ${rebaseCurrentCommit.trim()}, continuing rebase but skipping this commit`
+      `[rebase] no tracked changes to commit for ${rebaseCurrentCommit}, continuing rebase but skipping this commit`
     )
 
     const result = await git(
