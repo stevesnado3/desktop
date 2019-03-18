@@ -303,7 +303,7 @@ const makeMarkerConflictDropdownClickHandler = (
     const items: IMenuItem[] = [
       {
         label: OpenWithDefaultProgramLabel,
-        action: () => openFile(absoluteFilePath, dispatcher),
+        action: () => openFile(absoluteFilePath, dispatcher.postError),
       },
       {
         label: RevealInFileManagerLabel,

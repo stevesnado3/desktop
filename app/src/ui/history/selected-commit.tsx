@@ -183,7 +183,7 @@ export class SelectedCommit extends React.Component<
    */
   private onOpenItem = (path: string) => {
     const fullPath = Path.join(this.props.repository.path, path)
-    openFile(fullPath, this.props.dispatcher)
+    openFile(fullPath, this.props.dispatcher.postError)
   }
 
   public render() {

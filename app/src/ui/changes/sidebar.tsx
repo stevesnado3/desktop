@@ -251,7 +251,7 @@ export class ChangesSidebar extends React.Component<IChangesSidebarProps, {}> {
    */
   private onOpenItem = (path: string) => {
     const fullPath = Path.join(this.props.repository.path, path)
-    openFile(fullPath, this.props.dispatcher)
+    openFile(fullPath, this.props.dispatcher.postError)
   }
 
   /**

@@ -1,9 +1,8 @@
 import { shell } from '../../lib/app-shell'
-import { Dispatcher } from '../dispatcher'
 
 export async function openFile(
   fullPath: string,
-  dispatcher: Dispatcher
+  postError: (error: Error) => Promise<void>
 ): Promise<void> {
   const result = await shell.openExternal(`file://${fullPath}`)
 
@@ -12,6 +11,6 @@ export async function openFile(
       name: 'no-external-program',
       message: `Unable to open file ${fullPath} in an external program. Please check you have a program associated with this file extension`,
     }
-    await dispatcher.postError(error)
+    await postError(error)
   }
 }

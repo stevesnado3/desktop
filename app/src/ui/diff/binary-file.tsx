@@ -17,7 +17,7 @@ interface IBinaryFileProps {
 export class BinaryFile extends React.Component<IBinaryFileProps, {}> {
   private open = () => {
     const fullPath = Path.join(this.props.repository.path, this.props.path)
-    openFile(fullPath, this.props.dispatcher)
+    openFile(fullPath, this.props.dispatcher.postError)
   }
 
   public render() {
