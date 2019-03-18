@@ -29,6 +29,24 @@ function isRebaseHeadSet(repository: Repository) {
 }
 
 /**
+ * Attempt to read the `.git/REBASE_HEAD` file inside a repository to confirm
+ * the rebase is still active.
+ */
+async function readRebaseHead(repository: Repository): Promise<string | null> {
+  try {
+    const rebaseHead = Path.join(repository.path, '.git', 'REBASE_HEAD')
+    const rebaseCurrentCommitOutput = await FSE.readFile(rebaseHead, 'utf8')
+    return rebaseCurrentCommitOutput.trim()
+  } catch (err) {
+    log.warn(
+      '[rebase] a problem was encountered reading .git/REBASE_HEAD, so it is unsafe to continue rebasing',
+      err
+    )
+    return null
+  }
+}
+
+/**
  * Detect and build up the context about the rebase being performed on a
  * repository. This information is required to help Desktop display information
  * to the user about the current action as well as the options available.
@@ -269,11 +287,15 @@ export async function continueRebase(
   await stageFiles(repository, otherFiles)
 
   const status = await getStatus(repository)
-
   if (status == null) {
     log.warn(
       `[rebase] unable to get status after staging changes, skipping any other steps`
     )
+    return RebaseResult.Aborted
+  }
+
+  const rebaseCurrentCommit = await readRebaseHead(repository)
+  if (rebaseCurrentCommit === null) {
     return RebaseResult.Aborted
   }
 
@@ -292,19 +314,6 @@ export async function continueRebase(
   )
 
   if (trackedFilesAfter.length === 0) {
-    let rebaseCurrentCommit: string | null = null
-    try {
-      const rebaseHead = Path.join(repository.path, '.git', 'REBASE_HEAD')
-      const rebaseCurrentCommitOutput = await FSE.readFile(rebaseHead, 'utf8')
-      rebaseCurrentCommit = rebaseCurrentCommitOutput.trim()
-    } catch (err) {
-      log.warn(
-        '[rebase] a problem was encountered reading .git/REBASE_HEAD, so it is unsafe to continue rebasing',
-        err
-      )
-      return RebaseResult.Aborted
-    }
-
     log.warn(
       `[rebase] no tracked changes to commit for ${rebaseCurrentCommit}, continuing rebase but skipping this commit`
     )
