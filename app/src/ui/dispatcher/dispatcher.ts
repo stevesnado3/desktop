@@ -720,6 +720,8 @@ export class Dispatcher {
         baseBranch: baseBranch,
       })
     }
+
+    return result
   }
 
   /** aborts the current rebase and refreshes the repository's status */
