@@ -11,24 +11,24 @@ import {
   getConflictedFiles,
   isConflictedFile,
 } from '../../lib/status'
-import { Dispatcher } from '../dispatcher'
 import { Repository } from '../../models/repository'
 import { ManualConflictResolution } from '../../models/manual-conflict-resolution'
-import { BannerType } from '../../models/banner'
 import {
   renderUnmergedFilesSummary,
   renderShellLink,
   renderAllResolved,
 } from '../lib/conflicts/render-functions'
 import { renderUnmergedFile } from '../lib/conflicts/unmerged-file'
+import { Dispatcher } from '../dispatcher'
 
-interface IRebaseConflictsDialog {
+interface IShowConflictedFilesDialog {
   readonly dispatcher: Dispatcher
   readonly repository: Repository
   readonly targetBranch: string
   readonly baseBranch?: string
   readonly onDismissed: () => void
-  readonly onOpenDialog: () => void
+  readonly onAbortRebase: () => void
+  readonly showRebaseConflictsBanner: () => void
   readonly workingDirectory: WorkingDirectoryStatus
   readonly manualResolutions: Map<string, ManualConflictResolution>
   readonly openFileInExternalEditor: (path: string) => void
@@ -36,8 +36,8 @@ interface IRebaseConflictsDialog {
   readonly openRepositoryInShell: (repository: Repository) => void
 }
 
-export class RebaseConflictsDialog extends React.Component<
-  IRebaseConflictsDialog,
+export class ShowConflictedFilesDialog extends React.Component<
+  IShowConflictedFilesDialog,
   {}
 > {
   public async componentDidMount() {
@@ -45,17 +45,12 @@ export class RebaseConflictsDialog extends React.Component<
   }
 
   private onCancel = async () => {
-    await this.props.dispatcher.abortRebase(this.props.repository)
-    this.props.onDismissed()
+    this.props.onAbortRebase()
   }
 
   private onDismissed = () => {
-    this.props.dispatcher.setBanner({
-      type: BannerType.RebaseConflictsFound,
-      targetBranch: this.props.targetBranch,
-      onOpenDialog: this.props.onOpenDialog,
-    })
     this.props.onDismissed()
+    this.props.showRebaseConflictsBanner()
   }
 
   private onSubmit = async () => {
