@@ -807,6 +807,8 @@ export class Dispatcher {
         }
       }
     }
+
+    return result
   }
 
   /** aborts an in-flight merge and refreshes the repository's status */
